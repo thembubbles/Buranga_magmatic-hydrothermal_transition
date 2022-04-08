@@ -1,14 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
-
+# %%
 # # Raman data processing
 # #### Calculating area under peak from Raman files and processing to gas mol%
 
-# In[1]:
-
-
+# %%
 # ---------------- processing fluid inclusion Raman data (Raman spectroscopy)
-
 
 # --- import modules
 
@@ -28,9 +25,7 @@ root_dir = os.getcwd()
 base_dir = root_dir + "/Data/3-Raman/processed/"
 
 
-# In[2]:
-
-
+# %%
 # --- look into working directory and create a list with selected files - .txt
 os.chdir(base_dir)
 
@@ -68,10 +63,8 @@ df_Raman = df_Raman.fillna(0)
 df_Raman
 
 
-# In[3]:
-
-
-#copy data from source dataframe
+# %%
+# #copy data from source dataframe
 df_V_mol = df_Raman.copy()
 
 #split source Sample columns into relevant columns
@@ -130,14 +123,6 @@ df_FI_V = df_V_mol[['sample', 'piece', 'field', 'analysis',
                     ]
 
 
-# df_V_mol
-
-df_FI_V.to_csv(root_dir+'/Data/Processed_output/Buranga_FI_Raman_V_composition.csv',index=False)
+df_FI_V.to_csv(root_dir+'/Data/3-Raman/Buranga_FI_Raman_V_composition.csv',index=False)
 df_FI_V
-
-
-# In[ ]:
-
-
-
 

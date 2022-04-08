@@ -44,17 +44,15 @@ df_FI
 df_std = pd.read_csv(base_dir + "Buranga-FI-microth-standards.csv", 
                     encoding = "ANSI",index_col=0, header=0).T
 
-print(df_std.columns)
-
 
 a = list(df_std.columns[1:]) #list with each entry date (column names) in the dataset
 y = list(df_std["Standard"]) #list with expected values for the standards
 
+
+    # -- compare measured standard against the expected values from the fluid inclusion standards
 calibration_dict = dict()
 
-    # -- plot measured data against the expected values from the fluid inclusion standards
-
-for item in range(len(df_std.columns[1:])):  # loop to plot measurements for each entry date
+for item in range(len(df_std.columns[1:])):  # loop for assessing each entry date
 
     x = list(df_std[a[item]]) #list with measured values for the current entry date
     
@@ -67,10 +65,6 @@ for item in range(len(df_std.columns[1:])):  # loop to plot measurements for eac
     calibration_dict[a[item]] = (z[0],z[1])
     
 #     print(calibration_dict[a[item]],'\n',z[0],z[1],'\n')
-    
-#     df_std['z0'] = z[0]
-#     df_std['z1'] = z[1]
-
 
 print(calibration_dict)
 
@@ -78,8 +72,6 @@ df_std
 
 
 # %%
-
-
 # --- Use formula from calibration trendline to correct measured unknown data
 
     # -- remove unwanted data that could block the calculation
@@ -124,27 +116,21 @@ df_corrected = df_corrected[['sample','piece', 'field', 'analysis', 'Host',
                             'Length', 'Width', 'Phases', 'VL (%)', 'VV (%)',
                             'Tm CO2','Te', 'Tm Hh', 'Tm H2O', 'Tm CL', 
                             'Th CO2','Hmg Mode']]
-#                             'Tm Xts', 'Th total']]
-#                             'XCO2', 'XN2', 'XCH4', 'N2/CO2', 
-#                             'mNaCl (mol/kg)', 'mLiCl (mol/kg)','Na/Li', 
-#                             'Na%', 'Li%', 'Na/Li%', 'salinity', 'mCl (mol/kg)']]
 
 
+# --- Calculate the salinity of fluid inclusions using published equations 
 
-# W = 0.00098241*(10-TmCL)*(TmCL**2 + (45.385*TmCL) + 1588.75) 
 #Equation from Darling (1991) GCA
 df_corrected['salinity(NaCleq wt%)'] = 0.00098241*(10-df_corrected['Tm CL'])*((df_corrected['Tm CL']**2) + (45.385*df_corrected['Tm CL']) + 1588.75) 
 
 #Equation from Chen (1972) as presented in Diamond (1994) GCA 56, pp.273-280
 df_corrected['salChen(NaCleq wt%)'] = (15.6192 - (1.1406*df_corrected['Tm CL']) - (0.035*(df_corrected['Tm CL']**2)) - (0.0007*(df_corrected['Tm CL']**3)))
 
-
 #Equation from Bodnar(1993). GCA, 57(3), 683-684.
 df_corrected['salBod(NaCleq%)'] = (1.78*(0-df_corrected['Tm H2O']))-(0.0442*((0-df_corrected['Tm H2O'])**2))+(0.000557*(0-(df_corrected['Tm H2O']**3))) 
 
 
-df_corrected.to_csv(root_dir + 
-                    '/Data/Processed_output/Buranga_microthermometry_processed.csv')
+df_corrected.to_csv(base_dir + 'Buranga_FI_microthermometry_processed.csv')
 
 print(df_corrected.columns)
 
@@ -152,8 +138,6 @@ df_corrected
 
 
 # %%
-
-
 df_wyl = df_corrected.query('Host == "wyllieite"')
 df_trl = df_corrected.query('Host == "trolleite"')
 df_bts = df_corrected.query('Host == "bertossaite"')

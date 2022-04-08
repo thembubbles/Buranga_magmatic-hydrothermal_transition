@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # coding: utf-8
+# %%
+#Author: Fernando Prado Araujo
 
-# In[1]:
-
-
+# %%
 # ---------------- importing reduced LAICPMS data files
 
     # - LAICPMS data processed using SILLS for data reduction
@@ -22,9 +22,7 @@ root_dir = os.getcwd()
 base_dir = root_dir + "/Data/4-LAICPMS/"
 
 
-# In[2]:
-
-
+# %%
 # --- look into working directory and create a list with selected files - .xls
 os.chdir(base_dir)
 txt_files = glob.glob('*.xls')
@@ -33,9 +31,7 @@ print(txt_files)
 len(txt_files)
 
 
-# In[3]:
-
-
+# %%
 # --- create a single dataframe with all files in the list
 
 df_compo_raw = pd.DataFrame()
@@ -131,9 +127,7 @@ to_process.loc[scz, 'Host'] = 'scorzalite'
 to_process
 
 
-# In[4]:
-
-
+# %%
 df_data = to_process.drop(['File','Sample','sample', 'piece', 'field', 'analysis', 'Time', 'Info','Sb121', "Host"], axis=1)
 
 #separate data from metadata - only do calculation in data afterwards
@@ -153,11 +147,8 @@ print(df_data.columns)
 df_data
 
 
-# In[5]:
-
-
-
-df_reference = pd.read_csv(root_dir + '/Scripts/_Oxides_mass.csv', 
+# %%
+df_reference = pd.read_csv(root_dir + '/Data/_Oxides_mass.csv', 
                     encoding = "ANSI", 
                    index_col = 0)
 
@@ -187,9 +178,7 @@ print(reference_oxides.columns, len(reference_oxides.columns), '\n\n', molar_mas
 reference_oxides
 
 
-# In[6]:
-
-
+# %%
 df_data_bdl = df_data.copy()
 
 #replace values starting with "<" (i.e. below detection limit) to value/sqrt(value)
@@ -210,7 +199,6 @@ df_data_bdl = df_data.copy()
 df_data_bdl = df_data.replace({'<': np.nan},regex=True)
 
 df_data_bdl[df_data_bdl <= 1e-5] = np.nan
-# df_data_bdl[df_data_bdl < 0] = np.nan
 
 
 #add columns in the dataframe using iloc characters --> min_count=1 allows to sum columns containing NaN
@@ -219,22 +207,16 @@ df_data_bdl.loc[:,'Fe'] = df_data_bdl.loc[:,['Fe56','Fe57']].sum(axis=1, min_cou
 
 df_data_bdl = df_data_bdl.drop(['Ca43','Ca44', 'Fe56', 'Fe57'], axis=1)
 
-
-
-# df_data_bdl[['sample', 'piece', 'field', 'analysis', 'Host', 'Time', 'Info']] = df_metadata[['sample', 'piece', 'field', 'analysis', 'Host', 'Time', 'Info']]
-
 # df_data_bdl.to_csv(base_dir+'Buranga_data_LAICPMS_bdl_new.csv',index=False)
 
 df_data_bdl
 
 
-# In[7]:
-
-
-# --- new dataframe with molar concentrations (measured ppm divided by molar weights * 1000)
-    
+# %%
+# --- new dataframe with molar concentrations (measured ppm divided by molar weights * 1000) 
 # df_mol = df_data_bdl.div((molar_mass*1000), axis='columns')
 
+# --- or new dataframe in ppm
 df_mol = df_data_bdl.copy()
 
 df_mol.loc[:,'NbTa'] = df_mol.loc[:,['Nb','Ta']].sum(axis=1, min_count=1)
@@ -277,9 +259,7 @@ print(df_mol.columns)
 df_mol
 
 
-# In[8]:
-
-
+# %%
 # df_hosts = df_mol.copy()
 
 df_hosts = df_mol[df_mol['Info'].str.contains("matri|rutile")]
@@ -336,17 +316,15 @@ df_hosts['field'] = df_hosts['field'].astype(str).replace(('ffr7'),('r7'),regex=
 df_hosts['analysis'] = df_hosts['analysis'].astype(str).replace(('\.0','b'),('',''),regex=True)
 
 
-df_FI.to_csv(root_dir+'/Data/Processed_output/Buranga_FI_LAICPMS.csv',index=False)
-df_hosts.to_csv(root_dir+'/Data/Processed_output/Buranga_host_LAICPMS.csv',index=False)
+df_FI.to_csv(base_dir+'Buranga_FI_LAICPMS_ppm.csv',index=False)
+df_hosts.to_csv(base_dir+'Buranga_host_LAICPMS_ppm.csv',index=False)
 
 # print(df_FI.columns)
 
 # df_FI
 
 
-# In[9]:
-
-
+# %%
 import seaborn as sns
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
